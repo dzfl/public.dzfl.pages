@@ -1,51 +1,46 @@
 #!/usr/bin/env bash
-# convert-images.sh
-# attachments/ 内の画像をWebPに変換してEXIF削除・リサイズを行い
-# .gen/static/ 以下の公開URLパスに配置する
-#
-# セクション判定:
-#   source/blog/** → 日付平坦化（dateフロントマター + ファイル名でslug生成）
-#   それ以外       → source/ からの相対パス構造をそのまま維持
-#
-# 変換方式:
-#   拡張子ではなくidentifyで実体フォーマットを判定して入力に明示する
-#   出力はWEBP:プレフィックスでlibwebpをネイティブ使用（cwebpデリゲート不使用）
+# convert-images.sh【デバッグ版】
+# set -e を外してconvertのエラー詳細を出力する
 
-set -euo pipefail
+set -uo pipefail
 
 SOURCE_DIR="source"
 STATIC_OUT=".gen/static"
 
 echo "  ImageMagick: $(convert --version | head -1)"
 
-# フロントマターからdateを抽出する関数
 get_date() {
   local md_file="$1"
   grep -m1 '^date:' "$md_file" | sed 's/date:[[:space:]]*//' | tr -d '"' | tr -d "'"
 }
 
-# 画像をWebPに変換する関数
 convert_to_webp() {
   local input="$1"
   local output="$2"
 
-  # 拡張子に関わらず実体フォーマットを判定して入力に明示する
-  local format
-  format="$(identify -format "%m" "$input" 2>/dev/null | head -1)"
+  echo "  --- file info ---"
+  file "$input" 2>&1 || true
+  echo "  --- identify ---"
+  identify "$input" 2>&1 || true
 
-  # {FORMAT}:入力 → WEBP:出力 の形式でlibwebpをネイティブ使用
+  local format
+  format="$(identify -format "%m" "$input" 2>/dev/null | head -1 || echo "UNKNOWN")"
+  echo "  --- format: $format ---"
+
+  echo "  --- convert実行 ---"
   convert "${format}:${input}" \
     -resize 1920x\> \
     -strip \
     -quality 85 \
-    "WEBP:${output}"
+    "WEBP:${output}" 2>&1
+  local exit_code=$?
+  echo "  --- exit: $exit_code ---"
+  return $exit_code
 }
 
-# attachments/ ディレクトリを全件探索
 while IFS= read -r -d '' attachments_dir; do
   parent_dir="$(dirname "$attachments_dir")"
 
-  # 同階層のMDファイルを取得（_index.md は除外）
   md_files=()
   while IFS= read -r -d '' md; do
     md_files+=("$md")
@@ -58,7 +53,6 @@ while IFS= read -r -d '' attachments_dir; do
   md_file="${md_files[0]}"
   filename_slug="$(basename "$md_file" .md)"
 
-  # 出力先パスの決定
   if [[ "$md_file" == "${SOURCE_DIR}/blog/"* ]]; then
     date="$(get_date "$md_file")"
     if [ -z "$date" ]; then
@@ -75,7 +69,6 @@ while IFS= read -r -d '' attachments_dir; do
 
   mkdir -p "$out_dir"
 
-  # 画像を変換して配置
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
     name="${filename#"${filename_slug}-"}"
@@ -83,7 +76,10 @@ while IFS= read -r -d '' attachments_dir; do
     out_file="${out_dir}/${name_without_ext}.webp"
 
     echo "  変換: $img → $out_file"
-    convert_to_webp "$img" "$out_file"
+    convert_to_webp "$img" "$out_file" || {
+      echo "❌ 変換失敗: $img"
+      exit 1
+    }
 
   done < <(find "$attachments_dir" -maxdepth 1 \
     \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) \
@@ -91,11 +87,9 @@ while IFS= read -r -d '' attachments_dir; do
 
 done < <(find "$SOURCE_DIR" -type d -name "attachments" -print0)
 
-# source/assets/site/ はそのままコピー（変換なし）
 if [ -d "${SOURCE_DIR}/assets/site" ]; then
   mkdir -p "${STATIC_OUT}/assets/site"
   cp -r "${SOURCE_DIR}/assets/site/." "${STATIC_OUT}/assets/site/"
-  echo "  コピー: source/assets/site/ → ${STATIC_OUT}/assets/site/"
 fi
 
 echo "✅ 画像変換: 完了"

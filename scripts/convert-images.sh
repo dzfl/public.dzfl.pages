@@ -2,13 +2,22 @@
 # convert-images.sh
 # attachments/ 内の画像をWebPに変換してEXIF削除・リサイズを行い
 # .gen/static/ 以下の公開URLパスに配置する
+#
+# blogセクション: MDのdateフロントマターから日付を取得してslugを組み立てる
+# 例: slug.md (date: 2026-01-27) → 2026-01-27-slug/
 
 set -euo pipefail
 
 SOURCE_DIR="source"
 STATIC_OUT=".gen/static"
 
-# セクション判定：ソースパスから公開URLのセクションを返す
+# フロントマターからdateを抽出する関数
+get_date() {
+  local md_file="$1"
+  grep -m1 '^date:' "$md_file" | sed 's/date:[[:space:]]*//' | tr -d '"' | tr -d "'"
+}
+
+# セクション判定
 get_section() {
   local md_path="$1"
   if [[ "$md_path" == source/blog/* ]]; then
@@ -35,8 +44,20 @@ while IFS= read -r -d '' attachments_dir; do
   fi
 
   md_file="${md_files[0]}"
-  slug="$(basename "$md_file" .md)"
+  filename_slug="$(basename "$md_file" .md)"
   section="$(get_section "$md_file")"
+
+  # blogセクションのみdateを取得してslugに日付を付加
+  if [ "$section" = "blog" ]; then
+    date="$(get_date "$md_file")"
+    if [ -z "$date" ]; then
+      echo "❌ dateフロントマターが見つかりません: $md_file"
+      exit 1
+    fi
+    slug="${date}-${filename_slug}"
+  else
+    slug="$filename_slug"
+  fi
 
   # 出力先ディレクトリを決定
   if [ "$section" = "pages" ]; then
@@ -49,9 +70,8 @@ while IFS= read -r -d '' attachments_dir; do
   # 画像を変換して配置
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
-    # slug プレフィックスを除去してnameを取得
-    name="${filename#"${slug}-"}"
-    # 拡張子をwebpに変換
+    # ファイル名スラグプレフィックス（日付なし）を除去してnameを取得
+    name="${filename#"${filename_slug}-"}"
     name_without_ext="${name%.*}"
     out_file="${out_dir}/${name_without_ext}.webp"
 

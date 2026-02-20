@@ -2,6 +2,9 @@
 # validate.sh
 # attachments/ 内の画像ファイルが命名規則に従っているか検証する
 # 違反を全件収集してから exit 1 で停止する
+#
+# 命名規則: {mdファイル名（日付なし）}-{name}.{ext}
+# 例: slug-hero.png, slug-fig-01.webp
 
 set -euo pipefail
 
@@ -18,20 +21,18 @@ while IFS= read -r -d '' attachments_dir; do
     md_files+=("$md")
   done < <(find "$parent_dir" -maxdepth 1 -name "*.md" ! -name "_index.md" -print0)
 
-  # MDファイルが存在しない場合はスキップ
   if [ ${#md_files[@]} -eq 0 ]; then
     continue
   fi
 
-  # slugを取得（MDファイル名から拡張子を除いたもの）
   md_file="${md_files[0]}"
+  # slugはMDファイル名（日付なし・拡張子なし）
   slug="$(basename "$md_file" .md)"
 
   # attachments/ 内の画像ファイルを検証
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
     if [[ "$filename" != "${slug}-"* ]]; then
-      # 拡張子を除いたnameを推定（元のファイル名をそのまま使う）
       ext="${filename##*.}"
       name_without_ext="${filename%.*}"
       expected="${slug}-${name_without_ext}.${ext}"

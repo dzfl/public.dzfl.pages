@@ -1,7 +1,6 @@
 ---
 date: 2026-01-06
 title: testarticle
-slug: 2026-01-06-testarticle
 draft: false
 description: ""
 tags: []

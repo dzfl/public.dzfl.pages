@@ -8,9 +8,8 @@
 #   それ以外       → source/ からの相対パス構造をそのまま維持
 #
 # 変換方式:
-#   PNG/JPG/WebP → ImageMagick + libwebp でネイティブ処理
-#   出力時に WEBP: プレフィックスを指定することで
-#   cwebpデリゲートを使わずlibwebpを直接使用する
+#   拡張子ではなくidentifyで実体フォーマットを判定して入力に明示する
+#   出力はWEBP:プレフィックスでlibwebpをネイティブ使用（cwebpデリゲート不使用）
 
 set -euo pipefail
 
@@ -30,11 +29,12 @@ convert_to_webp() {
   local input="$1"
   local output="$2"
 
-  # WEBP: プレフィックスでlibwebpをネイティブ使用（cwebpデリゲート不使用）
-  # -resize 1920x\> : 1920px超の場合のみ縮小（縦横比維持）
-  # -strip          : EXIF/ICC/XMP等メタデータ削除
-  # -quality 85     : WebP品質
-  convert "$input" \
+  # 拡張子に関わらず実体フォーマットを判定して入力に明示する
+  local format
+  format="$(identify -format "%m" "$input" 2>/dev/null | head -1)"
+
+  # {FORMAT}:入力 → WEBP:出力 の形式でlibwebpをネイティブ使用
+  convert "${format}:${input}" \
     -resize 1920x\> \
     -strip \
     -quality 85 \

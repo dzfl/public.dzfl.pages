@@ -35,7 +35,7 @@ const message = "Hello, World!";
 console.log(message);
 ```
 
-![バイクと桜](attachments/test-article2-OKJ3.jpg)
+![バイクと桜](attachments/2026-02-20-test-article2_RCXO.jpg)
 
 
 

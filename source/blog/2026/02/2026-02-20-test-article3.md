@@ -7,4 +7,4 @@ description: ""
 
 # test-article3
 
-![](attachments/test-article3-FPHV.jpg)
+![](attachments/2026-02-20-test-article3_08VG.jpg)

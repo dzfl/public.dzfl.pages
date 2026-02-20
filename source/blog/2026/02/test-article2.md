@@ -1,12 +1,10 @@
-+++
-title = 'Test Article2'
-date = 2026-02-09
-draft = false
-author = [
-    "山田太郎",
-     "鈴木花子"
-]
-+++
+---
+date: 2026-02-20
+title: "test-article2"
+slug: 2026-02-20
+draft: false
+description: ""
+---
 
 # Test Article2
 

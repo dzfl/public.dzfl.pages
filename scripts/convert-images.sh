@@ -8,17 +8,14 @@
 #   それ以外       → source/ からの相対パス構造をそのまま維持
 #
 # 変換方式:
-#   PNG/JPG → ImageMagick でリサイズ・EXIF削除 → cwebp で WebP変換
-#   WebP    → cwebp で直接処理（メタデータ削除・リサイズ）
+#   PNG/JPG/WebP → ImageMagick で統一処理（リサイズ・メタデータ削除・WebP出力）
 
 set -euo pipefail
 
 SOURCE_DIR="source"
 STATIC_OUT=".gen/static"
 
-# ツールバージョンをログに出力
 echo "  ImageMagick: $(convert --version | head -1)"
-echo "  cwebp: $(cwebp -version 2>&1 | head -1)"
 
 # フロントマターからdateを抽出する関数
 get_date() {
@@ -26,36 +23,20 @@ get_date() {
   grep -m1 '^date:' "$md_file" | sed 's/date:[[:space:]]*//' | tr -d '"' | tr -d "'"
 }
 
-# 画像の幅を取得する関数
-get_width() {
-  local input="$1"
-  identify -format "%w" "$input" 2>/dev/null || echo "0"
-}
-
 # 画像をWebPに変換する関数
 convert_to_webp() {
   local input="$1"
   local output="$2"
-  local ext="${input##*.}"
 
-  if [[ "${ext,,}" == "webp" ]]; then
-    # WebP: cwebpで直接処理（メタデータ削除）
-    # リサイズが必要な場合のみ -resize を付与
-    local width
-    width="$(get_width "$input")"
-    if [ "$width" -gt 1920 ] 2>/dev/null; then
-      cwebp -quiet -q 85 -metadata none -resize 1920 0 "$input" -o "$output"
-    else
-      cwebp -quiet -q 85 -metadata none "$input" -o "$output"
-    fi
-  else
-    # PNG/JPG: ImageMagickでリサイズ・EXIF削除 → cwebpでWebP変換
-    local tmp_png
-    tmp_png="$(mktemp /tmp/convert_XXXXXX.png)"
-    convert "$input" -resize 1920x\> -strip "$tmp_png"
-    cwebp -quiet -q 85 -metadata none "$tmp_png" -o "$output"
-    rm -f "$tmp_png"
-  fi
+  # PNG/JPG/WebP全形式をImageMagickで統一処理
+  # -resize 1920x\> : 1920px超の場合のみ縮小（縦横比維持）
+  # -strip          : EXIF/ICC/XMP等メタデータ削除
+  # -quality 85     : WebP品質
+  convert "$input" \
+    -resize 1920x\> \
+    -strip \
+    -quality 85 \
+    "$output"
 }
 
 # attachments/ ディレクトリを全件探索

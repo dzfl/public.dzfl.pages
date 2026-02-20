@@ -8,7 +8,9 @@
 #   それ以外       → source/ からの相対パス構造をそのまま維持
 #
 # 変換方式:
-#   PNG/JPG/WebP → ImageMagick で統一処理（リサイズ・メタデータ削除・WebP出力）
+#   PNG/JPG/WebP → ImageMagick + libwebp でネイティブ処理
+#   出力時に WEBP: プレフィックスを指定することで
+#   cwebpデリゲートを使わずlibwebpを直接使用する
 
 set -euo pipefail
 
@@ -28,7 +30,7 @@ convert_to_webp() {
   local input="$1"
   local output="$2"
 
-  # PNG/JPG/WebP全形式をImageMagickで統一処理
+  # WEBP: プレフィックスでlibwebpをネイティブ使用（cwebpデリゲート不使用）
   # -resize 1920x\> : 1920px超の場合のみ縮小（縦横比維持）
   # -strip          : EXIF/ICC/XMP等メタデータ削除
   # -quality 85     : WebP品質
@@ -36,7 +38,7 @@ convert_to_webp() {
     -resize 1920x\> \
     -strip \
     -quality 85 \
-    "$output"
+    "WEBP:${output}"
 }
 
 # attachments/ ディレクトリを全件探索

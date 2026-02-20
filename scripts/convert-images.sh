@@ -2,9 +2,6 @@
 # convert-images.sh
 # attachments/ 内の画像をWebPに変換してEXIF削除・リサイズを行い
 # .gen/static/ 以下の公開URLパスに配置する
-#
-# blogセクション: MDのdateフロントマターから日付を取得してslugを組み立てる
-# 例: slug.md (date: 2026-01-27) → 2026-01-27-slug/
 
 set -euo pipefail
 
@@ -59,12 +56,14 @@ while IFS= read -r -d '' attachments_dir; do
     slug="$filename_slug"
   fi
 
-  # 出力先ディレクトリを決定
+  # 出力先ディレクトリを決定・作成
   if [ "$section" = "pages" ]; then
     out_dir="${STATIC_OUT}/${slug}"
   else
     out_dir="${STATIC_OUT}/${section}/${slug}"
   fi
+
+  echo "  出力先ディレクトリ: $out_dir"
   mkdir -p "$out_dir"
 
   # 画像を変換して配置
@@ -80,7 +79,11 @@ while IFS= read -r -d '' attachments_dir; do
       -resize 1920x\> \
       -strip \
       -quality 85 \
-      "$out_file"
+      "$out_file" || {
+        echo "❌ 変換失敗: $img"
+        echo "  ImageMagickエラーを確認してください"
+        exit 1
+      }
 
   done < <(find "$attachments_dir" -maxdepth 1 \
     \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) \

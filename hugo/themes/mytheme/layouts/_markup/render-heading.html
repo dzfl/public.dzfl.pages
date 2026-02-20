@@ -1,0 +1,22 @@
+{{- $level := .Level -}}
+{{- $anchor := .Anchor | safeURL -}}
+{{- $text := .Text | safeHTML -}}
+
+{{- if eq $level 1 -}}
+  {{- /* page kind（記事ページ）の最初のH1だけスキップ */ -}}
+  {{- if and (eq .Page.Kind "page") (not (.Page.Scratch.Get "h1rendered")) -}}
+    {{- .Page.Scratch.Set "h1rendered" true -}}
+    {{- /* スキップ（テンプレート側で {{ .Title }} として出力） */ -}}
+  {{- else -}}
+    {{- /* それ以外のH1は出力 */ -}}
+    <h1 id="{{ $anchor }}">{{ $text }}</h1>
+  {{- end -}}
+{{- else -}}
+  {{- /* H2-H6：アンカーリンク付きで出力 */ -}}
+  <h{{ $level }} id="{{ $anchor }}">
+    {{ $text }}
+    {{- if ge $level 2 -}}
+      <a href="#{{ $anchor }}" class="header-anchor" aria-label="Permalink">#</a>
+    {{- end -}}
+  </h{{ $level }}>
+{{- end -}}

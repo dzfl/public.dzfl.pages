@@ -1,0 +1,19 @@
+<figure class="code-block {{ if and .Type .Attributes.filename }}has-both{{ else if .Type }}has-type{{ else if .Attributes.filename }}has-filename{{ else }}has-none{{ end }}">
+  {{- $hasFilename := .Attributes.filename -}}
+  {{- $hasType := .Type -}}
+  
+  {{- if or $hasFilename $hasType -}}
+  <figcaption class="code-caption">
+    {{- if $hasType -}}
+    <data class="code-type" value="{{ .Type }}">{{ .Type }}</data>
+    {{- end -}}
+    {{- if $hasFilename -}}
+    <cite class="code-filename">{{ .Attributes.filename }}</cite>
+    {{- end -}}
+  </figcaption>
+  {{- end -}}
+  
+  <div class="code-content">
+    {{ highlight .Inner .Type .Options }}
+  </div>
+</figure>

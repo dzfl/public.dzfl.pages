@@ -1,0 +1,16 @@
+{{ define "main" }}
+  {{ .Content }}
+  
+  <section class="latest-posts">
+    <h2>最新の記事</h2>
+    <ul>
+      {{/* "posts" セクションから最新5件を取得 */}}
+      {{ range first 5 (where .Site.RegularPages "Section" "blog") }}
+        <li>
+          <time>{{ .Date.Format "2006-01-02" }}</time>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </li>
+      {{ end }}
+    </ul>
+  </section>
+{{ end }}

@@ -1,0 +1,279 @@
+/* ==========================================
+   シンタックスハイライト（GitHub風）
+   ライト/ダークモード対応
+========================================== */
+
+/* Chromaの基本設定を上書き */
+.chroma {
+  background-color: transparent !important;
+  color: inherit;
+}
+
+/* ライトモード */
+[data-theme="light"] .chroma { color: #1f2328; }
+
+/* ダークモード */
+[data-theme="dark"] .chroma { color: #e6edf3; }
+
+/* ==========================================
+   ライトモード（GitHub Light）
+========================================== */
+
+/* キーワード (if, def, function など) */
+[data-theme="light"] .chroma .k,
+[data-theme="light"] .chroma .kc,
+[data-theme="light"] .chroma .kd,
+[data-theme="light"] .chroma .kn,
+[data-theme="light"] .chroma .kp,
+[data-theme="light"] .chroma .kr,
+[data-theme="light"] .chroma .kt { color: #cf222e; }
+
+/* 文字列 */
+[data-theme="light"] .chroma .s,
+[data-theme="light"] .chroma .s1,
+[data-theme="light"] .chroma .s2,
+[data-theme="light"] .chroma .sa,
+[data-theme="light"] .chroma .sb,
+[data-theme="light"] .chroma .sc,
+[data-theme="light"] .chroma .sd,
+[data-theme="light"] .chroma .se,
+[data-theme="light"] .chroma .sh,
+[data-theme="light"] .chroma .si,
+[data-theme="light"] .chroma .sx,
+[data-theme="light"] .chroma .sr,
+[data-theme="light"] .chroma .ss,
+[data-theme="light"] .chroma .dl { color: #0a3069; }
+
+/* 数値 */
+[data-theme="light"] .chroma .m,
+[data-theme="light"] .chroma .mb,
+[data-theme="light"] .chroma .mf,
+[data-theme="light"] .chroma .mh,
+[data-theme="light"] .chroma .mi,
+[data-theme="light"] .chroma .mo,
+[data-theme="light"] .chroma .il { color: #0550ae; }
+
+/* コメント */
+[data-theme="light"] .chroma .c,
+[data-theme="light"] .chroma .c1,
+[data-theme="light"] .chroma .ch,
+[data-theme="light"] .chroma .cm,
+[data-theme="light"] .chroma .cp,
+[data-theme="light"] .chroma .cpf,
+[data-theme="light"] .chroma .cs { color: #57606a; }
+
+/* 関数名 */
+[data-theme="light"] .chroma .n,
+[data-theme="light"] .chroma .na,
+[data-theme="light"] .chroma .nb,
+[data-theme="light"] .chroma .bp,
+[data-theme="light"] .chroma .nc,
+[data-theme="light"] .chroma .nf,
+[data-theme="light"] .chroma .fm,
+[data-theme="light"] .chroma .nn,
+[data-theme="light"] .chroma .nx { color: #6639ba; }
+
+/* タグ名 */
+[data-theme="light"] .chroma .nt { color: #0550ae; }
+
+/* 変数・属性 */
+[data-theme="light"] .chroma .nv,
+[data-theme="light"] .chroma .vc,
+[data-theme="light"] .chroma .vg,
+[data-theme="light"] .chroma .vi,
+[data-theme="light"] .chroma .vm { color: #953800; }
+
+/* 定数 */
+[data-theme="light"] .chroma .no,
+[data-theme="light"] .chroma .nd { color: #0550ae; }
+
+/* エンティティ */
+[data-theme="light"] .chroma .ni { color: #6639ba; }
+
+/* ラベル */
+[data-theme="light"] .chroma .nl { color: #900; font-weight: bold; }
+
+/* 演算子 */
+[data-theme="light"] .chroma .o,
+[data-theme="light"] .chroma .ow { color: #0550ae; }
+
+/* 句読点 */
+[data-theme="light"] .chroma .p { color: #1f2328; }
+
+/* Diff（削除） */
+[data-theme="light"] .chroma .gd { color: #82071e; background-color: #ffebe9; }
+
+/* Diff（追加） */
+[data-theme="light"] .chroma .gi { color: #116329; background-color: #dafbe1; }
+
+/* エラー */
+[data-theme="light"] .chroma .err { color: #f6f8fa; background-color: #82071e; }
+
+/* 行番号 */
+[data-theme="light"] .chroma .ln,
+[data-theme="light"] .chroma .lnt { color: #7f7f7f; }
+
+/* ==========================================
+   ダークモード（GitHub Dark）
+========================================== */
+
+/* キーワード */
+[data-theme="dark"] .chroma .k,
+[data-theme="dark"] .chroma .kc,
+[data-theme="dark"] .chroma .kd,
+[data-theme="dark"] .chroma .kn,
+[data-theme="dark"] .chroma .kp,
+[data-theme="dark"] .chroma .kr,
+[data-theme="dark"] .chroma .kt { color: #ff7b72; }
+
+/* 文字列 */
+[data-theme="dark"] .chroma .s,
+[data-theme="dark"] .chroma .s1,
+[data-theme="dark"] .chroma .s2,
+[data-theme="dark"] .chroma .sa,
+[data-theme="dark"] .chroma .sb,
+[data-theme="dark"] .chroma .sc,
+[data-theme="dark"] .chroma .sd,
+[data-theme="dark"] .chroma .se,
+[data-theme="dark"] .chroma .sh,
+[data-theme="dark"] .chroma .si,
+[data-theme="dark"] .chroma .sx,
+[data-theme="dark"] .chroma .sr,
+[data-theme="dark"] .chroma .ss,
+[data-theme="dark"] .chroma .dl { color: #a5d6ff; }
+
+/* 数値 */
+[data-theme="dark"] .chroma .m,
+[data-theme="dark"] .chroma .mb,
+[data-theme="dark"] .chroma .mf,
+[data-theme="dark"] .chroma .mh,
+[data-theme="dark"] .chroma .mi,
+[data-theme="dark"] .chroma .mo,
+[data-theme="dark"] .chroma .il { color: #a5d6ff; }
+
+/* コメント */
+[data-theme="dark"] .chroma .c,
+[data-theme="dark"] .chroma .c1,
+[data-theme="dark"] .chroma .ch,
+[data-theme="dark"] .chroma .cm,
+[data-theme="dark"] .chroma .cp,
+[data-theme="dark"] .chroma .cpf,
+[data-theme="dark"] .chroma .cs { color: #8b949e; font-style: italic; }
+
+/* 関数名 */
+[data-theme="dark"] .chroma .nf,
+[data-theme="dark"] .chroma .fm { color: #d2a8ff; font-weight: bold; }
+
+/* クラス名 */
+[data-theme="dark"] .chroma .nc { color: #f0883e; font-weight: bold; }
+
+/* タグ名 */
+[data-theme="dark"] .chroma .nt { color: #7ee787; }
+
+/* 属性 */
+[data-theme="dark"] .chroma .na,
+[data-theme="dark"] .chroma .nb,
+[data-theme="dark"] .chroma .bp,
+[data-theme="dark"] .chroma .n,
+[data-theme="dark"] .chroma .nn,
+[data-theme="dark"] .chroma .nx { color: #e6edf3; }
+
+/* 変数 */
+[data-theme="dark"] .chroma .nv,
+[data-theme="dark"] .chroma .vc,
+[data-theme="dark"] .chroma .vg,
+[data-theme="dark"] .chroma .vi,
+[data-theme="dark"] .chroma .vm { color: #79c0ff; }
+
+/* 定数 */
+[data-theme="dark"] .chroma .no { color: #79c0ff; font-weight: bold; }
+
+/* デコレータ */
+[data-theme="dark"] .chroma .nd { color: #d2a8ff; font-weight: bold; }
+
+/* エンティティ */
+[data-theme="dark"] .chroma .ni { color: #ffa657; }
+
+/* 例外 */
+[data-theme="dark"] .chroma .ne { color: #f0883e; font-weight: bold; }
+
+/* ラベル */
+[data-theme="dark"] .chroma .nl { color: #79c0ff; font-weight: bold; }
+
+/* プロパティ */
+[data-theme="dark"] .chroma .py { color: #79c0ff; }
+
+/* 演算子 */
+[data-theme="dark"] .chroma .o,
+[data-theme="dark"] .chroma .ow { color: #ff7b72; font-weight: bold; }
+
+/* リテラル（日付など） */
+[data-theme="dark"] .chroma .l,
+[data-theme="dark"] .chroma .ld { color: #a5d6ff; }
+
+/* Diff（削除） */
+[data-theme="dark"] .chroma .gd { color: #ffa198; background-color: #490202; }
+
+/* Diff（追加） */
+[data-theme="dark"] .chroma .gi { color: #56d364; background-color: #0f5323; }
+
+/* 強調 */
+[data-theme="dark"] .chroma .ge { font-style: italic; }
+
+/* 太字 */
+[data-theme="dark"] .chroma .gs { font-weight: bold; }
+
+/* 見出し */
+[data-theme="dark"] .chroma .gh { color: #79c0ff; font-weight: bold; }
+
+/* サブ見出し */
+[data-theme="dark"] .chroma .gu { color: #79c0ff; }
+
+/* 出力 */
+[data-theme="dark"] .chroma .go { color: #8b949e; }
+
+/* プロンプト */
+[data-theme="dark"] .chroma .gp { color: #8b949e; }
+
+/* エラー */
+[data-theme="dark"] .chroma .gr,
+[data-theme="dark"] .chroma .gt { color: #ff7b72; }
+
+/* エラー（背景付き） */
+[data-theme="dark"] .chroma .err { color: #f85149; }
+
+/* 下線 */
+[data-theme="dark"] .chroma .gl { text-decoration: underline; }
+
+/* 行番号 */
+[data-theme="dark"] .chroma .ln { color: #6e7681; }
+[data-theme="dark"] .chroma .lnt { color: #737679; }
+
+/* 空白 */
+[data-theme="dark"] .chroma .w { color: #6e7681; }
+
+/* ==========================================
+   共通スタイル
+========================================== */
+
+/* 行表示 */
+.chroma .line { display: flex; }
+
+/* 行ハイライト */
+.chroma .hl { background-color: rgba(100, 100, 100, 0.2); }
+
+/* 行番号テーブル */
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+
+/* 行番号リンク */
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit; }
+
+/* 行番号（ユーザー選択不可） */
+.chroma .ln,
+.chroma .lnt {
+  white-space: pre;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0 0.4em 0 0.4em;
+}

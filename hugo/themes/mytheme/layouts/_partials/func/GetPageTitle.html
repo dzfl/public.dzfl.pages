@@ -1,0 +1,5 @@
+{{- $title := .Title -}}
+{{- if eq .Kind "section" -}}
+    {{- $title = printf "%s archive" .Title -}}
+{{- end -}}
+{{- return $title -}}

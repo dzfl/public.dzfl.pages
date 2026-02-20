@@ -1,0 +1,12 @@
+<figure>
+<img src="{{ .Destination | safeURL }}" 
+     alt="{{ .Text }}" 
+     loading="lazy"
+     {{- with .Title }} title="{{ . }}"{{ end }}>
+{{- with .Title }}
+<figcaption>{{ . }}</figcaption>
+{{/* <figcaption>{{ . }} <a href="{{ $.Destination | safeURL }}">(原寸)</a></figcaption> */}}
+{{- else }}
+{{/* <figcaption><a href="{{ .Destination | safeURL }}">原寸で見る</a></figcaption> */}}
+{{- end }}
+</figure>

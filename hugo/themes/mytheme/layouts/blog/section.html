@@ -1,0 +1,36 @@
+{{- define "main" }}
+    <article class="blog-list" itemscope itemtype="https://schema.org/Blog">
+        <h1 id="page-title">{{ partial "func/GetPageTitle.html" . }}</h1>
+
+        {{/* 1. .Paginator を呼ぶことで、hugo.toml の pagerSize が自動適用されます。
+        2. .Paginator.PageGroups を GroupByDate で回します。
+        */}}
+{{- $pages := where .Site.RegularPages "Section" .Section }}
+{{- $paginator := .Paginate $pages }}
+
+{{- range ($paginator.Pages.GroupByDate "2006") }}
+            <section aria-labelledby="year-{{ .Key }}">
+                <h2 id="year-{{ .Key }}">{{ .Key }}</h2>
+            
+            {{/* 年の下でさらに月ごとに分けたい場合 */}}
+            {{/* - range (.Pages.GroupByDate "01") */}}
+                <!-- <h3 class="month-heading">{{ .Key }}</h3> -->
+                    <!-- <section class="month-section"> -->
+                    {{- range .Pages }}
+                        <!-- 各記事 -->
+                        <article itemscope itemtype="https://schema.org/BlogPosting" itemprop="blogPost">
+                            <header>
+                                <h3><a href="{{ .Permalink }}" itemprop="url"><span itemprop="headline">{{ .Title }}</span></a></h3>
+                                <time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                            </header>
+                            <p class="summary">{{ .Summary | plainify | truncate 100 }}</p>
+                        </article>
+                    {{- end }}
+                    <!-- </section> -->
+            {{/*- end */}}
+            </section>
+        {{- end }}
+    </article>
+
+    {{ partial "page-nav-section.html" . }}
+{{- end }}

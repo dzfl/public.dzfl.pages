@@ -1,0 +1,60 @@
+{{/*
+# テーマ切り替えスクリプトの説明・最初に書く理由
+このスクリプトは、ユーザーのテーマ設定を即座に反映させるために、head.htmlの最初に配置しています。
+これにより、ページが読み込まれる際に、ユーザーのテーマ設定がすぐに適用され、
+フラッシュオブアンスタイルドコンテンツ（FOUC）を防ぐことができます。
+
+1. HTML解析開始
+2. <head> 解析
+3. インラインスクリプト即座に実行 ← テーマ設定（ダークモード）
+4. CSS読み込み開始
+5. CSS適用（ダークモード）← 正しいテーマで表示
+6. main.js 読み込み（テーマ切り替えボタンのイベント設定）
+
+*/}}
+<!-- head.html の最初 -->
+<script>
+(function() {
+  // テーマ取得の優先順位
+  let theme = localStorage.getItem('theme');
+  
+  if (!theme) {
+    // localStorageになければシステム設定を確認
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      theme = 'dark';
+    } else {
+      theme = 'light';
+    }
+  }
+  
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+<!-- meta description -->
+{{ with .Description }}
+<meta name="description" content="{{ . }}">
+{{ else with .Site.Params.description }}
+<meta name="description" content="{{ . }}">
+{{ end }}
+
+{{- $displayTitle := partial "func/GetPageTitle.html" . -}}
+{{- $pageTitle := cond .IsHome site.Title (printf "%s | %s" $displayTitle site.Title) -}}
+
+<title>{{ $pageTitle }}</title>
+
+<!-- OGP -->
+<meta property="og:title" content="{{ $pageTitle }}">
+<meta property="og:type" content="{{ if .IsHome }}website{{ else if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{ with .Description }}
+<meta property="og:description" content="{{ . }}">
+{{ else with .Site.Params.description }}
+<meta property="og:description" content="{{ . }}">
+{{ end }}
+
+{{ partialCached "head/css.html" . }}
+{{ partialCached "head/js.html" . }}

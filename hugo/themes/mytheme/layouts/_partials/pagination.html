@@ -1,0 +1,80 @@
+{{ $paginator := .Paginator }}
+
+{{ if gt $paginator.TotalPages 1 }}
+<ul class="pagination-list" role="list">
+  <!-- First -->
+  {{ if $paginator.HasPrev }}
+  <li class="pagination-item">
+    <a href="{{ print (path.Clean $paginator.First.URL) "/" }}" aria-label="最初のページ" class="pagination-link">
+      <span aria-hidden="true">&laquo;&laquo;</span>
+    </a>
+  </li>
+  {{ else }}
+  <li class="pagination-item pagination-disabled">
+    <span aria-label="最初のページ" class="pagination-link">
+      <span aria-hidden="true">&laquo;&laquo;</span>
+    </span>
+  </li>
+  {{ end }}
+
+  <!-- Previous -->
+  {{ if $paginator.HasPrev }}
+  <li class="pagination-item">
+    <a href="{{ print (path.Clean $paginator.Prev.URL) "/" }}" aria-label="前のページ" class="pagination-link">
+      <span aria-hidden="true">&laquo;</span>
+    </a>
+  </li>
+  {{ else }}
+  <li class="pagination-item pagination-disabled">
+    <span aria-label="前のページ" class="pagination-link">
+      <span aria-hidden="true">&laquo;</span>
+    </span>
+  </li>
+  {{ end }}
+
+  <!-- Page numbers -->
+  {{ range $paginator.Pagers }}
+  <li class="pagination-item{{ if eq . $paginator }} pagination-active{{ end }}">
+    {{ if eq . $paginator }}
+    <span aria-current="page" aria-label="ページ {{ .PageNumber }}" class="pagination-link">
+      {{ .PageNumber }}
+    </span>
+    {{ else }}
+    <a href="{{ print (path.Clean .URL) "/" }}" aria-label="ページ {{ .PageNumber }}" class="pagination-link">
+      {{ .PageNumber }}
+    </a>
+    {{ end }}
+  </li>
+  {{ end }}
+
+  <!-- Next -->
+  {{ if $paginator.HasNext }}
+  <li class="pagination-item">
+    <a href="{{ print (path.Clean $paginator.Next.URL) "/" }}" aria-label="次のページ" class="pagination-link">
+      <span aria-hidden="true">&raquo;</span>
+    </a>
+  </li>
+  {{ else }}
+  <li class="pagination-item pagination-disabled">
+    <span aria-label="次のページ" class="pagination-link">
+      <span aria-hidden="true">&raquo;</span>
+    </span>
+  </li>
+  {{ end }}
+
+  <!-- Last -->
+  {{ if $paginator.HasNext }}
+  <li class="pagination-item">
+    <a href="{{ print (path.Clean $paginator.Last.URL) "/" }}" aria-label="最後のページ" class="pagination-link">
+      <span aria-hidden="true">&raquo;&raquo;</span>
+    </a>
+  </li>
+  {{ else }}
+  <li class="pagination-item pagination-disabled">
+    <span aria-label="最後のページ" class="pagination-link">
+      <span aria-hidden="true">&raquo;&raquo;</span>
+    </span>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}

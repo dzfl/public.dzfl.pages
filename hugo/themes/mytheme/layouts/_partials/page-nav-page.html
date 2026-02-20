@@ -1,0 +1,17 @@
+<nav class="pagination pagination-articles" aria-label="記事のナビゲーション">
+  <div class="pagination-wrapper">
+    {{ with .PrevInSection }}
+    <a href="{{ .RelPermalink }}" class="pagination-link pagination-prev" rel="prev">
+      <span class="pagination-label">← 前</span>
+      <span class="pagination-title">{{ .LinkTitle }}</span>
+    </a>
+    {{ end }}
+    
+    {{ with .NextInSection }}
+    <a href="{{ .RelPermalink }}" class="pagination-link pagination-next" rel="next">
+      <span class="pagination-label">次 →</span>
+      <span class="pagination-title">{{ .LinkTitle }}</span>
+    </a>
+    {{ end }}
+  </div>
+</nav>

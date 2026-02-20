@@ -13,8 +13,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ImageMagick
-        run: sudo apt-get install -y imagemagick
+      - name: Install dependencies
+        run: sudo apt-get install -y imagemagick webp
 
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v3
@@ -34,8 +34,8 @@ jobs:
       - name: Build Hugo
         run: bash scripts/build.sh
 
-#      - name: Deploy to Cloudflare Workers
-#        uses: cloudflare/wrangler-action@v3
-#        with:
-#          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-#          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

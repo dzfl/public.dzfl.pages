@@ -4,11 +4,12 @@
 
 :root {
   /* デフォルト：ライトモード */
-  --bg-primary: #fbfbfb;
+  --bg-primary: #F2F2F2;
   --bg-secondary: #dfdfdf;
-  --text-primary: #1c1c1c;
+  --text-heading: #111111;
+  --text-primary: #222222;
   --text-secondary: #666666;
-  --border-color: #d4d3d0;
+  --border-color: #dddddd;
   --link-color: #000000;
   --link-hover: #000000;
   
@@ -43,11 +44,12 @@
 
 [data-theme="dark"] {
   /* ダークモード */
-  --bg-primary: #1c1c1c;
+  --bg-primary: #222222;
   --bg-secondary: #2d2d2d;
-  --text-primary: #e9e9e9;
+  --text-heading: #FFFFFF;
+  --text-primary: #DCDCDC;
   --text-secondary: #a0a0a0;
-  --border-color: #404040;
+  --border-color: #3A3B3D;
   --link-color: hsl(0, 0%, 100%);
   --link-hover: #ffffff;
 }
@@ -58,7 +60,7 @@
 
 body {
   background-color: var(--bg-primary);
-  color: var(--text-primary);
+  color: var(--text-heading);
   transition: background-color 0.3s ease, color 0.3s ease;
   margin: 0;
   padding: 0 1rem;

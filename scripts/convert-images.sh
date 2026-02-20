@@ -2,6 +2,14 @@
 # convert-images.sh
 # attachments/ 内の画像をWebPに変換してEXIF削除・リサイズを行い
 # .gen/static/ 以下の公開URLパスに配置する
+#
+# セクション判定:
+#   source/blog/** → 日付平坦化（dateフロントマター + ファイル名でslug生成）
+#   それ以外       → source/ からの相対パス構造をそのまま維持
+#
+# 変換方式:
+#   PNG/JPG → ImageMagick でリサイズ・EXIF削除 → cwebp で WebP変換
+#   WebP    → cwebp で直接処理（リサイズ・メタデータ削除）
 
 set -euo pipefail
 
@@ -14,15 +22,22 @@ get_date() {
   grep -m1 '^date:' "$md_file" | sed 's/date:[[:space:]]*//' | tr -d '"' | tr -d "'"
 }
 
-# セクション判定
-get_section() {
-  local md_path="$1"
-  if [[ "$md_path" == source/blog/* ]]; then
-    echo "blog"
-  elif [[ "$md_path" == source/docs/* ]]; then
-    echo "docs"
+# 画像をWebPに変換する関数
+convert_to_webp() {
+  local input="$1"
+  local output="$2"
+  local ext="${input##*.}"
+
+  if [[ "${ext,,}" == "webp" ]]; then
+    # WebP: cwebpで直接処理（メタデータ削除・リサイズ）
+    cwebp -quiet -q 85 -metadata none -resize 1920 0 "$input" -o "$output"
   else
-    echo "pages"
+    # PNG/JPG: ImageMagickでリサイズ・EXIF削除後にcwebpでWebP変換
+    local tmp_png
+    tmp_png="$(mktemp /tmp/convert_XXXXXX.png)"
+    convert "$input" -resize 1920x\> -strip "$tmp_png"
+    cwebp -quiet -q 85 -metadata none "$tmp_png" -o "$output"
+    rm -f "$tmp_png"
   fi
 }
 
@@ -42,48 +57,37 @@ while IFS= read -r -d '' attachments_dir; do
 
   md_file="${md_files[0]}"
   filename_slug="$(basename "$md_file" .md)"
-  section="$(get_section "$md_file")"
 
-  # blogセクションのみdateを取得してslugに日付を付加
-  if [ "$section" = "blog" ]; then
+  # 出力先パスの決定
+  # source/blog/** のみ日付平坦化、それ以外は相対パス構造を維持
+  if [[ "$md_file" == "${SOURCE_DIR}/blog/"* ]]; then
     date="$(get_date "$md_file")"
     if [ -z "$date" ]; then
       echo "❌ dateフロントマターが見つかりません: $md_file"
       exit 1
     fi
     slug="${date}-${filename_slug}"
+    out_dir="${STATIC_OUT}/blog/${slug}"
   else
+    # source/ からの相対ディレクトリをそのまま使用
+    # 例: source/docs/attachments/ → .gen/static/docs/{slug}/
+    #     source/attachments/      → .gen/static/{slug}/
+    rel_dir="${parent_dir#"${SOURCE_DIR}/"}"
     slug="$filename_slug"
+    out_dir="${STATIC_OUT}/${rel_dir}/${slug}"
   fi
 
-  # 出力先ディレクトリを決定・作成
-  if [ "$section" = "pages" ]; then
-    out_dir="${STATIC_OUT}/${slug}"
-  else
-    out_dir="${STATIC_OUT}/${section}/${slug}"
-  fi
-
-  echo "  出力先ディレクトリ: $out_dir"
   mkdir -p "$out_dir"
 
   # 画像を変換して配置
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
-    # ファイル名スラグプレフィックス（日付なし）を除去してnameを取得
     name="${filename#"${filename_slug}-"}"
     name_without_ext="${name%.*}"
     out_file="${out_dir}/${name_without_ext}.webp"
 
     echo "  変換: $img → $out_file"
-    convert "$img" \
-      -resize 1920x\> \
-      -strip \
-      -quality 85 \
-      "$out_file" || {
-        echo "❌ 変換失敗: $img"
-        echo "  ImageMagickエラーを確認してください"
-        exit 1
-      }
+    convert_to_webp "$img" "$out_file"
 
   done < <(find "$attachments_dir" -maxdepth 1 \
     \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) \

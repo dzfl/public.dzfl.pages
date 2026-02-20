@@ -2,6 +2,7 @@
 # validate.sh
 # attachments/ 内の画像ファイルが命名規則に従っているか検証する
 # 違反を全件収集してから exit 1 で停止する
+# エラー内容は GitHub Actions のジョブサマリーにも書き込む
 #
 # 命名規則: {mdファイル名（日付なし）}-{name}.{ext}
 # 例: slug-hero.png, slug-fig-01.webp
@@ -26,7 +27,6 @@ while IFS= read -r -d '' attachments_dir; do
   fi
 
   md_file="${md_files[0]}"
-  # slugはMDファイル名（日付なし・拡張子なし）
   slug="$(basename "$md_file" .md)"
 
   # attachments/ 内の画像ファイルを検証
@@ -45,16 +45,49 @@ while IFS= read -r -d '' attachments_dir; do
 
 done < <(find "$SOURCE_DIR" -type d -name "attachments" -print0)
 
-# 違反があれば全件出力して停止
+# 違反があれば全件出力してジョブサマリーに書き込み停止
 if [ ${#ERRORS[@]} -gt 0 ]; then
-  echo "❌ 命名規則エラー: プレフィックスなし画像が検出されました（${#ERRORS[@]}件）"
+  msg="❌ 命名規則エラー: プレフィックスなし画像が検出されました（${#ERRORS[@]}件）"
+  echo "$msg"
   echo ""
+
+  # ジョブサマリーに書き込む
+  if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+    echo "## ❌ 命名規則エラー" >> "$GITHUB_STEP_SUMMARY"
+    echo "" >> "$GITHUB_STEP_SUMMARY"
+    echo "プレフィックスなし画像が **${#ERRORS[@]}件** 検出されました。" >> "$GITHUB_STEP_SUMMARY"
+    echo "" >> "$GITHUB_STEP_SUMMARY"
+    echo "| # | ファイル | 対応MD | 期待するファイル名 |" >> "$GITHUB_STEP_SUMMARY"
+    echo "|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+  fi
+
+  count=1
   for err in "${ERRORS[@]}"; do
     echo "$err"
     echo ""
+
+    # ジョブサマリーにテーブル行を追加
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+      file=$(echo "$err" | grep 'ファイル:' | sed 's/.*ファイル: //')
+      md=$(echo "$err"   | grep '対応MD:'   | sed 's/.*対応MD:   //')
+      exp=$(echo "$err"  | grep '期待名:'   | sed 's/.*期待名:   //')
+      echo "| $count | \`$file\` | \`$md\` | \`$exp\` |" >> "$GITHUB_STEP_SUMMARY"
+    fi
+    count=$((count + 1))
   done
+
+  if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+    echo "" >> "$GITHUB_STEP_SUMMARY"
+    echo "ファイルをリネームしてから再pushしてください。" >> "$GITHUB_STEP_SUMMARY"
+  fi
+
   echo "修正してから再pushしてください。"
   exit 1
 fi
 
 echo "✅ 命名規則バリデーション: 問題なし"
+
+# 正常時もサマリーに記録
+if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+  echo "## ✅ 命名規則バリデーション: 問題なし" >> "$GITHUB_STEP_SUMMARY"
+fi

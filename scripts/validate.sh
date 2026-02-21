@@ -4,12 +4,13 @@
 # 違反を全件収集してから exit 1 で停止する
 # エラー内容は GitHub Actions のジョブサマリーにも書き込む
 #
-# 命名規則: {slug}_{name}.{ext}
-# slugとnameの区切りは最初の _
-# ただし _ で始まるファイル（_index.md用画像等）はバリデーション対象外
+# 命名規則: {slug}--{name}.{ext}
+# slugとnameの区切りは "--"（ハイフン2つ）
+# slug・name共にハイフン1つは自由に使える
+# 例: 2026-02-04-my-travel-blog--hero-01.png
 #
 # 検証方法:
-#   画像ファイル名の最初の _ より前の部分をスラグとして抽出し
+#   画像ファイル名の "--" より前の部分をスラグとして抽出し
 #   同階層に {slug}.md が存在するかを確認する
 
 set -euo pipefail
@@ -24,23 +25,17 @@ while IFS= read -r -d '' attachments_dir; do
   # attachments/ 内の画像ファイルを検証
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
-
-    # _ で始まるファイルは対象外（_index.md用画像等）
-    if [[ "$filename" == _* ]]; then
-      continue
-    fi
-
     name_no_ext="${filename%.*}"
 
-    # _ が存在しない → 命名規則違反
-    if [[ "$name_no_ext" != *_* ]]; then
-      ERRORS+=("$(printf '[%d]\n  ファイル: %s\n  問題:     アンダースコア区切りがありません\n  期待形式: {slug}_{name}.{ext}（例: 2026-02-04-slug_hero.png）' \
+    # "--" が存在しない → 命名規則違反
+    if [[ "$name_no_ext" != *--* ]]; then
+      ERRORS+=("$(printf '[%d]\n  ファイル: %s\n  問題:     "--" 区切りがありません\n  期待形式: {slug}--{name}.{ext}（例: 2026-02-04-slug--hero.png）' \
         "$((${#ERRORS[@]} + 1))" "$img")")
       continue
     fi
 
-    # スラグ部分を抽出（最初の _ より前）
-    slug="${name_no_ext%%_*}"
+    # スラグ部分を抽出（最初の "--" より前）
+    slug="${name_no_ext%--*}"
 
     # 対応するMDファイルが同階層に存在するか確認
     md_file="${parent_dir}/${slug}.md"

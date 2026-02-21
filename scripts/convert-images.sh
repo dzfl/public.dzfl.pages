@@ -3,17 +3,17 @@
 # attachments/ 内の画像をWebPに変換してEXIF削除・リサイズを行い
 # .gen/static/ 以下の公開URLパスに配置する
 #
-# 命名規則: {slug}_{name}.{ext}
-# slugとnameの区切りは最初の _
-# 例: 2026-02-04-my-travel-blog_hero.png → hero.webp
+# 命名規則: {slug}--{name}.{ext}
+# slugとnameの区切りは "--"（ハイフン2つ）
+# 例: 2026-02-04-my-travel-blog--hero-01.png → hero-01.webp
 #
 # セクション判定:
-#   source/blog/** → blog セクション（slugがそのまま公開URL）
+#   source/blog/** → blog セクション
 #   それ以外       → source/ からの相対パス構造をそのまま維持
 #
 # 変換方式:
 #   拡張子に関わらずidentifyで実体フォーマットを判定して入力に明示する
-#   出力はWEBP:プレフィックスでlibwebpをネイティブ使用（cwebpデリゲート不使用）
+#   出力はWEBP:プレフィックスでlibwebpをネイティブ使用
 
 set -euo pipefail
 
@@ -26,8 +26,6 @@ echo "  ImageMagick: $(convert --version | head -1)"
 convert_to_webp() {
   local input="$1"
   local output="$2"
-
-  # 拡張子に関わらず実体フォーマットを判定して入力に明示する
   local format
   format="$(identify -format "%m" "$input" 2>/dev/null | head -1)"
 
@@ -47,16 +45,14 @@ while IFS= read -r -d '' attachments_dir; do
     filename="$(basename "$img")"
     name_no_ext="${filename%.*}"
 
-    # 最初の _ でスラグとnameに分割
-    slug="${name_no_ext%%_*}"
-    name="${name_no_ext#*_}"
+    # "--" でスラグとnameに分割
+    slug="${name_no_ext%--*}"
+    name="${name_no_ext##*--}"
 
     # 出力先パスの決定
     if [[ "$parent_dir" == "${SOURCE_DIR}/blog"* ]]; then
-      # blogセクション: slugがそのまま公開URL
       out_dir="${STATIC_OUT}/blog/${slug}"
     else
-      # それ以外: source/ からの相対パス構造を維持
       rel_dir="${parent_dir#"${SOURCE_DIR}/"}"
       out_dir="${STATIC_OUT}/${rel_dir}/${slug}"
     fi

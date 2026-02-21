@@ -1,7 +1,7 @@
 ---
 ---
 
-# dzfl blog
+# dzfl blog あああああああああ
 
 日記です。個人サイトです。
 
@@ -9,6 +9,6 @@
 あああaaaa
 
 
-![](attachments/_index--OUZY.jpg)
+![](attachments/_index1--D0D9.jpg)
 
 

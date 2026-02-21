@@ -1,12 +1,53 @@
+{{- /*
+  render-image.html
+  MD内の画像参照を公開URLに変換するRender Hook
+
+  入力（.Destination）の例:
+    attachments/2026-02-20-test-article3_08VG.jpg
+    attachments/_index_OUZY.jpg（_で始まる場合はそのまま出力）
+
+  出力URLの例:
+    /blog/2026-02-20-test-article3/08VG.webp
+    /about/OUZY.webp（_index.md用）
+
+  変換ルール:
+    1. "attachments/" プレフィックスを除去してファイル名を取得
+    2. _ で始まるファイル名は _index.md 用：nameを取得してセクションパスで出力
+    3. 通常ファイルは最初の _ でスラグとnameに分割
+    4. 拡張子を .webp に変換
+    5. /{section}/{slug}/{name}.webp の形式でURLを組み立て
+*/ -}}
+
+{{- $dest := .Destination -}}
+{{- $src := $dest -}}
+
+{{- if hasPrefix $dest "attachments/" -}}
+  {{- $filename := strings.TrimPrefix "attachments/" $dest -}}
+  {{- $nameNoExt := strings.TrimSuffix (path.Ext $filename) $filename -}}
+
+  {{- if hasPrefix $nameNoExt "_" -}}
+    {{- /* _で始まる = _index.md用画像: _プレフィックスとスラグ部分を除去してnameを取得 */}}
+    {{- $withoutLeading := strings.TrimPrefix "_" $nameNoExt -}}
+    {{- /* 最初の _ 以降がname */}}
+    {{- $name := index (split $withoutLeading "_") 1 -}}
+    {{- $section := .Page.Section -}}
+    {{- $src = printf "/%s/%s.webp" $section $name -}}
+  {{- else -}}
+    {{- /* 通常ファイル: 最初の _ でスラグとnameに分割 */}}
+    {{- $parts := split $nameNoExt "_" -}}
+    {{- $name := index $parts 1 -}}
+    {{- $section := .Page.Section -}}
+    {{- $slug := .Page.File.ContentBaseName -}}
+    {{- $src = printf "/%s/%s/%s.webp" $section $slug $name -}}
+  {{- end -}}
+{{- end -}}
+
 <figure>
-<img src="{{ .Destination | safeURL }}" 
-     alt="{{ .Text }}" 
+<img src="{{ $src | safeURL }}"
+     alt="{{ .Text }}"
      loading="lazy"
      {{- with .Title }} title="{{ . }}"{{ end }}>
 {{- with .Title }}
 <figcaption>{{ . }}</figcaption>
-{{/* <figcaption>{{ . }} <a href="{{ $.Destination | safeURL }}">(原寸)</a></figcaption> */}}
-{{- else }}
-{{/* <figcaption><a href="{{ .Destination | safeURL }}">原寸で見る</a></figcaption> */}}
 {{- end }}
 </figure>

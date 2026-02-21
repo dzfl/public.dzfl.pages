@@ -5,9 +5,8 @@
 # エラー内容は GitHub Actions のジョブサマリーにも書き込む
 #
 # 命名規則: {slug}_{name}.{ext}
-# slugとnameの区切りは最初の _ （スラグ・name共にハイフンを含んでよい）
-# 例: 2026-02-04-my-travel-blog_hero.png
-#     2026-02-04-my-travel-blog_fig-01.png
+# slugとnameの区切りは最初の _
+# ただし _ で始まるファイル（_index.md用画像等）はバリデーション対象外
 #
 # 検証方法:
 #   画像ファイル名の最初の _ より前の部分をスラグとして抽出し
@@ -25,12 +24,16 @@ while IFS= read -r -d '' attachments_dir; do
   # attachments/ 内の画像ファイルを検証
   while IFS= read -r -d '' img; do
     filename="$(basename "$img")"
+
+    # _ で始まるファイルは対象外（_index.md用画像等）
+    if [[ "$filename" == _* ]]; then
+      continue
+    fi
+
     name_no_ext="${filename%.*}"
 
-    # 最初の _ でスラグとnameに分割
+    # _ が存在しない → 命名規則違反
     if [[ "$name_no_ext" != *_* ]]; then
-      # _ が存在しない → 命名規則違反
-      expected_md="${parent_dir}/$(echo "$name_no_ext" | cut -d- -f1-4).md"
       ERRORS+=("$(printf '[%d]\n  ファイル: %s\n  問題:     アンダースコア区切りがありません\n  期待形式: {slug}_{name}.{ext}（例: 2026-02-04-slug_hero.png）' \
         "$((${#ERRORS[@]} + 1))" "$img")")
       continue
@@ -42,7 +45,6 @@ while IFS= read -r -d '' attachments_dir; do
     # 対応するMDファイルが同階層に存在するか確認
     md_file="${parent_dir}/${slug}.md"
     if [ ! -f "$md_file" ]; then
-      # 同階層のMDを列挙してエラーメッセージに含める
       existing_mds=()
       while IFS= read -r -d '' md; do
         existing_mds+=("$(basename "$md")")

@@ -19,7 +19,7 @@ publishDir = "../.gen/public"
 
 [permalinks]
   [permalinks.page]
-    blog = "/blog/:filename/"
+    blog = "/blog/:contentbasename/"
 
 [params]
   author = "dzfl"

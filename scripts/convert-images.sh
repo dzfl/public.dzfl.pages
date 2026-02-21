@@ -7,10 +7,11 @@
 # slugとnameの区切りは "--"（ハイフン2つ）
 # 例: 2026-02-04-my-travel-blog--hero-01.png → hero-01.webp
 #
-# セクション判定:
-#   source/blog/** → blog セクション
-#   source/docs/** → docs セクション（以降同様）
-#   source/attachments/ → slugに対応するMDがsource/直下 → pagesセクション扱い
+# 出力先パスの決定ルール:
+#   source/blog/**        → .gen/static/blog/{slug}/{name}.webp
+#   source/attachments/   → スラグが "_index" なら .gen/static/{name}.webp
+#                           それ以外は .gen/static/{slug}/{name}.webp
+#   その他セクション      → .gen/static/{rel_dir}/{slug}/{name}.webp
 #
 # 変換方式:
 #   拡張子に関わらずidentifyで実体フォーマットを判定して入力に明示する
@@ -55,9 +56,14 @@ while IFS= read -r -d '' attachments_dir; do
       # blogセクション
       out_dir="${STATIC_OUT}/blog/${slug}"
     elif [[ "$parent_dir" == "${SOURCE_DIR}" ]]; then
-      # source/ 直下のattachments/: slugに対応するMDがsource/直下
-      # slugがそのままページ名になる（about, links等）
-      out_dir="${STATIC_OUT}/${slug}"
+      # source/ 直下のattachments/
+      if [[ "$slug" == "_index" ]]; then
+        # トップページ用: ルート直下
+        out_dir="${STATIC_OUT}"
+      else
+        # about等: スラグがそのままパス
+        out_dir="${STATIC_OUT}/${slug}"
+      fi
     else
       # その他セクション: source/ からの相対パス構造を維持
       rel_dir="${parent_dir#"${SOURCE_DIR}/"}"

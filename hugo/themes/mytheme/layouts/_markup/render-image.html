@@ -3,18 +3,17 @@
   MD内の画像参照を公開URLに変換するRender Hook
 
   入力（.Destination）の例:
-    attachments/2026-02-20-test-article3--hero-01.jpg
-
-  出力URLの例:
-    /blog/2026-02-20-test-article3/hero-01.webp
+    attachments/2026-02-20-test-article3--hero-01.jpg  → /blog/2026-02-20-test-article3/hero-01.webp
+    attachments/about--profile.jpg                     → /about/profile.webp
+    attachments/_index--hero.jpg                       → /hero.webp
 
   変換ルール:
     1. "attachments/" プレフィックスを除去してファイル名を取得
     2. "--" でスラグとnameに分割
-    3. 拡張子を .webp に変換
-    4. /{section}/{slug}/{name}.webp の形式でURLを組み立て
-
-  "--" が含まれない場合はそのまま出力する（変換対象外）
+    3. スラグが "_index" の場合はルート直下 → /{name}.webp
+    4. .Page.Section がある場合 → /{section}/{slug}/{name}.webp
+    5. .Page.Section がない場合（about等）→ /{slug}/{name}.webp
+    6. "--" が含まれない場合はそのまま出力（変換対象外）
 */ -}}
 
 {{- $dest := .Destination -}}
@@ -25,12 +24,19 @@
   {{- $ext := path.Ext $filename -}}
   {{- $nameNoExt := strings.TrimSuffix $ext $filename -}}
 
-  {{- /* "--" で分割: replaceを1回だけ行いスラグを取得、nameは末尾から取得 */}}
   {{- $slug := index (split $nameNoExt "--") 0 -}}
-  {{- $afterSlug := strings.TrimPrefix (printf "%s--" $slug) $nameNoExt -}}
+  {{- $name := strings.TrimPrefix (printf "%s--" $slug) $nameNoExt -}}
 
-  {{- $section := .Page.Section -}}
-  {{- $src = printf "/%s/%s/%s.webp" $section $slug $afterSlug -}}
+  {{- if eq $slug "_index" -}}
+    {{- /* トップページ用: ルート直下 */}}
+    {{- $src = printf "/%s.webp" $name -}}
+  {{- else if ne .Page.Section "" -}}
+    {{- /* blog等セクションページ */}}
+    {{- $src = printf "/%s/%s/%s.webp" .Page.Section $slug $name -}}
+  {{- else -}}
+    {{- /* about等セクションなしページ: スラグがそのままパス */}}
+    {{- $src = printf "/%s/%s.webp" $slug $name -}}
+  {{- end -}}
 {{- end -}}
 
 <figure>

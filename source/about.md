@@ -6,3 +6,5 @@ draft = false
 
 this is About page.
 Im a human.
+
+![バイクと桜](attachments/about_RY6C.jpg)

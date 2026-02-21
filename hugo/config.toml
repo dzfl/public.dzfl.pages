@@ -1,8 +1,9 @@
 baseURL = 'https://site.dzfl.workers.dev/'
-languageCode = 'ja-JP'
 title = 'dzfl.jp'
-timeZone = "Asia/Tokyo"
 
+# build環境(Github Actions等)によってはJSTではなくUCTとして見るので未来の記事は生成されない場合がある
+timeZone = "Asia/Tokyo"
+languageCode = 'ja-JP'
 defaultContentLanguage = "ja"
 defaultContentLanguageInSubdir = false
 # 日本語のようなスペース区切りのない言語で文字数を正しくカウントする

@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://site.dzfl.workers.dev/'
 languageCode = 'ja-JP'
 title = 'dzfl.jp'
 
@@ -11,13 +11,15 @@ summaryLength = 20
 
 disableKinds = ['taxonomy', 'term']
 
-
 theme = "mytheme"
 
-contentDir = "../source"
+contentDir = "../.gen/content"
 staticDir  = ["../.gen/static", "themes/mytheme/static"]
 publishDir = "../.gen/public"
 
+[permalinks]
+  [permalinks.page]
+    blog = "/blog/:filename/"
 
 [params]
   author = "dzfl"
@@ -26,12 +28,10 @@ publishDir = "../.gen/public"
   social_x = "https://x.com/dzfl"
   social_youtube = "https://www.youtube.com/@dzfl"
 
-
 [pagination]
   disableAliases = true
   pagerSize = 5
   path = ''
-
 
 [menus]
   [[menus.main]]
@@ -49,14 +49,6 @@ publishDir = "../.gen/public"
     pageRef = '/about'
     weight = 30
 
-#  [[menus.footer]]
-#    name = ''
-#    pageRef = '/'
-#    weight = 10
-
-
-
-
 [module]
   [module.hugoVersion]
     extended = false
@@ -64,16 +56,9 @@ publishDir = "../.gen/public"
 
 [markup]
   [markup.highlight]
-    # インラインスタイルを使用（true）かCSSクラスを使用（false）
     noClasses = false
-    
-    # コードフェンスを有効化
     codeFences = true
-    
-    # 行番号は不要
     lineNos = false
-    
-    # ベーススタイル（CSSで上書き可能）
     style = "github"
 
   [markup.goldmark]
@@ -83,4 +68,3 @@ publishDir = "../.gen/public"
       wrapStandAloneImageWithinParagraph = false
       [markup.goldmark.parser.attribute]
         block = true
-

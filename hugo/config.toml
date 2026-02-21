@@ -1,7 +1,7 @@
 baseURL = 'https://site.dzfl.workers.dev/'
 languageCode = 'ja-JP'
 title = 'dzfl.jp'
-timeZone = Asia/Tokyo
+timeZone = "Asia/Tokyo"
 
 defaultContentLanguage = "ja"
 defaultContentLanguageInSubdir = false

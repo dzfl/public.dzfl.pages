@@ -1,7 +1,6 @@
 ---
 date: 2026-02-20
 title: "test-article2"
-slug: 2026-02-20
 draft: false
 description: ""
 ---

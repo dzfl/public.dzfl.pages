@@ -1,8 +1,8 @@
 ---
-title: "home dayo"
+title: "dzfl blog"
 ---
 
-# dzfl blog あああああああああ
+# dzfl blog
 
 日記です。個人サイトです。
 

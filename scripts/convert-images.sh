@@ -9,7 +9,8 @@
 #
 # セクション判定:
 #   source/blog/** → blog セクション
-#   それ以外       → source/ からの相対パス構造をそのまま維持
+#   source/docs/** → docs セクション（以降同様）
+#   source/attachments/ → slugに対応するMDがsource/直下 → pagesセクション扱い
 #
 # 変換方式:
 #   拡張子に関わらずidentifyで実体フォーマットを判定して入力に明示する
@@ -51,8 +52,14 @@ while IFS= read -r -d '' attachments_dir; do
 
     # 出力先パスの決定
     if [[ "$parent_dir" == "${SOURCE_DIR}/blog"* ]]; then
+      # blogセクション
       out_dir="${STATIC_OUT}/blog/${slug}"
+    elif [[ "$parent_dir" == "${SOURCE_DIR}" ]]; then
+      # source/ 直下のattachments/: slugに対応するMDがsource/直下
+      # slugがそのままページ名になる（about, links等）
+      out_dir="${STATIC_OUT}/${slug}"
     else
+      # その他セクション: source/ からの相対パス構造を維持
       rel_dir="${parent_dir#"${SOURCE_DIR}/"}"
       out_dir="${STATIC_OUT}/${rel_dir}/${slug}"
     fi

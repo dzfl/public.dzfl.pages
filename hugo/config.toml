@@ -32,7 +32,7 @@ publishDir = "../.gen/public"
 
 [pagination]
   disableAliases = true
-  pagerSize = 5
+  pagerSize = 2
   path = ''
 
 [menus]

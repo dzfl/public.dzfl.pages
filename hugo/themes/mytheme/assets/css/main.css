@@ -16,9 +16,10 @@
   /* レイアウト */
   --content-max-width: 800px;
   --back-to-top-offset: 2rem;
-  
+
   /* 本文：システムフォント（読みやすさ最優先） */
   --font-body: 
+    "helvetica-neue-world",
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
